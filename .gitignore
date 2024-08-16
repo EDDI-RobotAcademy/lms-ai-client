@@ -1,0 +1,10 @@
+# ignore .env
+.env
+
+# ignore security files
+*.crt
+*.pem
+*.key
+
+#ignore .idea directory
+.idea
