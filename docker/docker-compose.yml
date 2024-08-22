@@ -1,0 +1,41 @@
+version: '3.10'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf  # IP 화이트리스트 설정 참조
+    restart: unless-stopped  # 컨테이너가 중지되면 자동으로 다시 시작
+    command: >
+      bash -c "
+      echo 'MongoDB 컨테이너 시작 중...';
+      mongosh -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --eval \"
+      var userExists = db.getSiblingDB('admin').getUser('${MONGO_USER}');
+      if (userExists) {
+          print('사용자 ${MONGO_USER} 이미 존재');
+      } else {
+          db.getSiblingDB('${MONGO_DB}').createUser({
+              user: '${MONGO_USER}',
+              pwd: '${MONGO_PASSWORD}',
+              roles: [{ role: 'readWrite', db: '${MONGO_DB}' }]
+          });
+          print('사용자 ${MONGO_USER} 생성 완료');
+      }\";
+      echo 'MongoDB 컨테이너 실행 완료'; 
+      tail -f /dev/null"
+
+volumes:
+  mongodb_data:
+
+# 사용 방법:
+# 1. .env 파일을 생성하여 필요한 환경 변수를 설정합니다.
+# 2. 'docker-compose up -d' 명령어를 실행하여 MongoDB 컨테이너를 시작합니다.
+# 3. MongoDB에 접속하려면 다음 명령어를 사용합니다:
+#    'docker exec -it mongodb-container mongosh -u <사용자명> -p <비밀번호> --authenticationDatabase <DB이름>'
