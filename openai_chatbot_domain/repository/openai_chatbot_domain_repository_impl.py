@@ -1,9 +1,10 @@
-from fastapi import HTTPException
 import os
-from dotenv import load_dotenv
-import httpx
 
-from openai_chatbot_domain.repository.openai_chatbot_repository import OpenaiChatbotRepository
+import httpx
+from fastapi import HTTPException
+from dotenv import load_dotenv
+
+from openai_chatbot_domain.repository.openai_chatbot_domain_repository import OpenaiChatbotDomainRepository
 
 load_dotenv()
 
@@ -11,17 +12,15 @@ openaiApiKey = os.getenv('OPENAI_API_KEY')
 if not openaiApiKey:
     raise ValueError('API Key가 준비되어 있지 않습니다!')
 
-
-class OpenaiChatbotRepositoryImpl(OpenaiChatbotRepository):
+class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
     __instance = None
-    __recipe = None
+
     headers = {
         'Authorization': f'Bearer {openaiApiKey}',
         'Content-Type': 'application/json'
     }
 
     OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
-
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
@@ -33,15 +32,13 @@ class OpenaiChatbotRepositoryImpl(OpenaiChatbotRepository):
         if cls.__instance is None:
             cls.__instance = cls()
 
-            return cls.__instance
+        return cls.__instance
 
     async def generateRecipe(self, userSendMessage):
-        print(f"repository -> makeRecipe()")
-
         data = {
             'model': 'gpt-3.5-turbo',
             'messages': [
-                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "content": "You are a helpful assistant. 한글로 답변하자.!"},
                 {"role": "user", "content": userSendMessage}
             ]
         }

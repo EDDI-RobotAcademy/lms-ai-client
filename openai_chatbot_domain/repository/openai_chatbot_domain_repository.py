@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 
-
-class OpenaiChatbotDomainService(ABC):
+class OpenaiChatbotDomainRepository(ABC):
     @abstractmethod
     def generateRecipe(self, userSendMessage):
         pass

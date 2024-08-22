@@ -1,19 +1,24 @@
-from openai_chatbot_domain.repository.openai_chatbot_repository_impl import OpenaiChatbotRepositoryImpl
-from openai_chatbot_domain.service.openai_chatbot_service import OpenaiChatbotService
-from openai_chatbot_domain.service.response.make_recipe_responce import GeneratedRecipeResponse
-from template.custom_protocol.entity.custom_protocol import CustomProtocolNumber
+from openai_chatbot_domain.repository.openai_chatbot_domain_repository_impl import OpenaiChatbotDomainRepositoryImpl
+from openai_chatbot_domain.service.openai_chatbot_service import OpenaiChatbotDomainService
 
 
-class OpenaiChatbotServiceImpl(OpenaiChatbotService):
+class OpenaiChatbotDomainServiceImpl(OpenaiChatbotDomainService):
     __instance = None
 
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
-            cls.__instance.__openaiChatbotRepository = OpenaiChatbotRepositoryImpl.getInstance()
+            cls.__instance.__openaiChatbotDomainRepository = OpenaiChatbotDomainRepositoryImpl.getInstance()
 
         return cls.__instance
 
-    def makeRecipe(self, userSendMessage):
-        recipe = self.__openaiChatbotRepository.generateRecipe(userSendMessage)
-        return GeneratedRecipeResponse(CustomProtocolNumber.MAKE_RECIPE, recipe)
+    @classmethod
+    def getInstance(cls):
+        if cls.__instance is None:
+            cls.__instance = cls()
+
+        return cls.__instance
+
+    def generateRecipe(self, userSendMessage):
+        print("starting generate recipe")
+        return self.__openaiChatbotDomainRepository.generateRecipe(userSendMessage)
