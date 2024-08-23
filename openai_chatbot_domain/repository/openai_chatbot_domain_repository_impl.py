@@ -42,6 +42,7 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
                 {"role": "user", "content": userSendMessage}
             ]
         }
+        print("Recipe generating starting...")
 
         async with httpx.AsyncClient() as client:
             try:

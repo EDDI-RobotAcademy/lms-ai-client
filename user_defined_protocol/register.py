@@ -10,9 +10,9 @@ from openai_chatbot_domain.service.response.openai_chatbot_domain_response impor
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'template'))
 
-from template.custom_protocol.service.custom_protocol_service_impl import CustomProtocolServiceImpl
-from template.response_generator.response_class_map import ResponseClassMap
-from template.request_generator.request_class_map import RequestClassMap
+from custom_protocol.service.custom_protocol_service_impl import CustomProtocolServiceImpl
+from response_generator.response_class_map import ResponseClassMap
+from request_generator.request_class_map import RequestClassMap
 
 from user_defined_protocol.protocol import UserDefinedProtocolNumber
 
