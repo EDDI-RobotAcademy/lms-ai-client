@@ -12,6 +12,7 @@ openaiApiKey = os.getenv('OPENAI_API_KEY')
 if not openaiApiKey:
     raise ValueError('API Key가 준비되어 있지 않습니다!')
 
+
 class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
     __instance = None
 
@@ -21,6 +22,7 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
     }
 
     OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
+
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
@@ -36,7 +38,7 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
 
     async def generateRecipe(self, userSendMessage):
         data = {
-            'model': 'gpt-3.5-turbo',
+            'model': 'gpt-4o-mini',
             'messages': [
                 {"role": "system", "content": "You are a helpful assistant. 한글로 답변하자.!"},
                 {"role": "user", "content": userSendMessage}
@@ -44,12 +46,14 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
         }
         print("Recipe generating starting...")
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10) as client:
             try:
                 response = await client.post(self.OPENAI_CHAT_COMPLETIONS_URL, headers=self.headers, json=data)
                 response.raise_for_status()
 
-                return response.json()['choices'][0]['message']['content'].strip()
+                generatedRecipe = response.json()['choices'][0]['message']['content'].strip()
+                print(generatedRecipe)
+                return {"recipe": generatedRecipe}
 
             except httpx.HTTPStatusError as e:
                 print(f"HTTP Error: {str(e)}")
