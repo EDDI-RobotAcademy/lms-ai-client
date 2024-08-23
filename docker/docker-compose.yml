@@ -3,14 +3,14 @@ version: '3.10'
 services:
   mongodb:
     image: mongo:latest
-    container_name: mongodb-container
+    container_name: lms_dlls_container
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - mongodb_data:/data/db
+      - dlls_mongodb_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf  # IP 화이트리스트 설정 참조
     restart: unless-stopped  # 컨테이너가 중지되면 자동으로 다시 시작
     command: >
@@ -32,7 +32,7 @@ services:
       tail -f /dev/null"
 
 volumes:
-  mongodb_data:
+  dlls_mongodb_data:
 
 # 사용 방법:
 # 1. .env 파일을 생성하여 필요한 환경 변수를 설정합니다.
