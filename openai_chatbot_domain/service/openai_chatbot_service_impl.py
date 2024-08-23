@@ -25,3 +25,7 @@ class OpenaiChatbotDomainServiceImpl(OpenaiChatbotDomainService):
         print(f"generatedRecipe: {generatedRecipe}")
         print(f"recipe generating complete... Inserting queue")
         return await generatedRecipe
+
+    async def getGeneratedVoice(self, chatbotMessage, voiceActor):
+        return self.__openaiChatbotDomainRepository.getGeneratedVoice(chatbotMessage, voiceActor)
+
