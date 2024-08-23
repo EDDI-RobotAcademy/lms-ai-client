@@ -1,9 +1,10 @@
 import os
-
+import base64
 import httpx
 from fastapi import HTTPException
 from dotenv import load_dotenv
-
+import openai
+from openai import OpenAI
 from openai_chatbot_domain.repository.openai_chatbot_domain_repository import OpenaiChatbotDomainRepository
 
 load_dotenv()
@@ -12,6 +13,7 @@ openaiApiKey = os.getenv('OPENAI_API_KEY')
 if not openaiApiKey:
     raise ValueError('API Key가 준비되어 있지 않습니다!')
 
+client = OpenAI()
 
 class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
     __instance = None
@@ -64,3 +66,13 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
             except (httpx.RequestError, ValueError) as e:
                 print(f"Request Error: {e}")
                 raise HTTPException(status_code=500, detail=f"Request Error: {e}")
+
+
+    async def getGeneratedVoice(self, chatbotMessage, voiceActor):
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice=voiceActor,
+            input=chatbotMessage,
+        )
+        audioData = base64.b64encode(response.content).decode('utf-8')
+        return audioData
