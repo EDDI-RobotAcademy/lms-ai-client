@@ -20,5 +20,5 @@ class OpenaiChatbotDomainServiceImpl(OpenaiChatbotDomainService):
         return cls.__instance
 
     def generateRecipe(self, userSendMessage):
-        print("starting generate recipe")
+        print("starting generate recipe...\ncalling repository->generateRecipe...")
         return self.__openaiChatbotDomainRepository.generateRecipe(userSendMessage)
