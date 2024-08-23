@@ -3,7 +3,6 @@ import base64
 import httpx
 from fastapi import HTTPException
 from dotenv import load_dotenv
-import openai
 from openai import OpenAI
 from openai_chatbot_domain.repository.openai_chatbot_domain_repository import OpenaiChatbotDomainRepository
 
