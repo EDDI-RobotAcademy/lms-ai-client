@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 
+
 class OpenaiChatbotDomainRepository(ABC):
     @abstractmethod
     def generateRecipe(self, userSendMessage):
@@ -7,4 +8,8 @@ class OpenaiChatbotDomainRepository(ABC):
 
     @abstractmethod
     def getGeneratedVoice(self, chatbotMessage, voiceActor):
+        pass
+
+    @abstractmethod
+    def getGeneratedVoice2(self, chatbotMessage, voiceActor):
         pass

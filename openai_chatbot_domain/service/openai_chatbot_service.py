@@ -9,3 +9,7 @@ class OpenaiChatbotDomainService(ABC):
     @abstractmethod
     def getGeneratedVoice(self, chatbotMessage, voiceActor):
         pass
+
+    @abstractmethod
+    def getGeneratedVoice2(self, chatbotMessage, voiceActor):
+        pass
