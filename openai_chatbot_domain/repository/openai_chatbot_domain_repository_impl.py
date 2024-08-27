@@ -71,7 +71,7 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
         data = {
             'model': 'tts-1',
             'voice': voiceActor,
-            'input': chatbotMessage
+            'messages': chatbotMessage
         }
         async with httpx.AsyncClient(timeout=10) as client:
             try:
@@ -98,4 +98,4 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
             input=chatbotMessage,
         )
         audioData = base64.b64encode(response.content).decode('utf-8')
-        return audioData
+        return {"audioData": audioData}
