@@ -6,6 +6,7 @@ from first_user_defined_function_domain.service.request.fudf_just_for_test_reque
 from first_user_defined_function_domain.service.response.fudf_just_for_test_response import FudfJustForTestResponse
 from openai_chatbot_domain.service.openai_chatbot_service_impl import OpenaiChatbotDomainServiceImpl
 from openai_chatbot_domain.service.request.openai_chatbot_domain_request import OpenaiChatbotDomainRequest
+from openai_chatbot_domain.service.request.openai_chatbot_domain_tts_request import OpenaiChatbotDomainTTSRequest
 from openai_chatbot_domain.service.response.openai_chatbot_domain_response import OpenaiChatbotDomainResponse
 from openai_chatbot_domain.service.response.openai_chatbot_domain_tts_response import OpenaiChatbotDomainTTSResponse
 
@@ -51,31 +52,42 @@ class UserDefinedProtocolRegister:
             UserDefinedProtocolNumber.MAKE_RECIPE,
             OpenaiChatbotDomainRequest
         )
-        requestClassMapInstance.addRequestClass(
-            UserDefinedProtocolNumber.MAKE_AUDIO_V2,
-            OpenaiChatbotDomainTTSResponse
-        )
 
         responseClassMapInstance = ResponseClassMap.getInstance()
         responseClassMapInstance.addResponseClass(
             UserDefinedProtocolNumber.MAKE_RECIPE,
             OpenaiChatbotDomainResponse
         )
-        responseClassMapInstance.addResponseClass(
-            UserDefinedProtocolNumber.MAKE_AUDIO_V2,
-            OpenaiChatbotDomainTTSResponse
-        )
 
         customProtocolService.registerCustomProtocol(
             UserDefinedProtocolNumber.MAKE_RECIPE,
             openaiChatbotDomainService.generateRecipe
         )
+
+    @staticmethod
+    def OpenaiChatbotDamainTTSProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        openaiChatbotDomainService = OpenaiChatbotDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.MAKE_AUDIO,
+            OpenaiChatbotDomainTTSRequest
+        )
+
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.MAKE_AUDIO,
+            OpenaiChatbotDomainTTSResponse
+        )
+
         customProtocolService.registerCustomProtocol(
-            UserDefinedProtocolNumber.MAKE_AUDIO_V2,
-            openaiChatbotDomainService.getGeneratedVoice2
+            UserDefinedProtocolNumber.MAKE_AUDIO,
+            openaiChatbotDomainService.getGeneratedVoice
         )
 
     @staticmethod
     def registerUserDefinedProtocol():
         UserDefinedProtocolRegister.registerDefaultUserDefinedProtocol()
         UserDefinedProtocolRegister.OpenaiChatbotDomainProtocol()
+        UserDefinedProtocolRegister.OpenaiChatbotDamainTTSProtocol()

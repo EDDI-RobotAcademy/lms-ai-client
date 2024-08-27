@@ -10,7 +10,7 @@ from user_defined_protocol.protocol import UserDefinedProtocolNumber
 
 class OpenaiChatbotDomainTTSRequest(BaseRequest):
     def __init__(self, **kwargs):
-        self.__protocolNumber = UserDefinedProtocolNumber.MAKE_AUDIO_V2.value
+        self.__protocolNumber = UserDefinedProtocolNumber.MAKE_AUDIO.value
         self.parameterList = kwargs.get('data', [])
 
     def getProtocolNumber(self):
