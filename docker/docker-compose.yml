@@ -12,7 +12,8 @@ services:
     volumes:
       - mongodb_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf  # IP 화이트리스트 설정 참조
-    restart: unless-stopped  # 컨테이너가 중지되면 자동으로 다시 시작
+      - ./scripts:/scripts  # Python 스크립트를 위한 볼륨 매핑
+    restart: unless-stopped
     command: >
       bash -c "
       echo 'MongoDB 컨테이너 시작 중...';
@@ -28,6 +29,7 @@ services:
           });
           print('사용자 ${MONGO_USER} 생성 완료');
       }\";
+      python3 /scripts/check_and_create_collection.py;  # 파이썬 스크립트 실행
       echo 'MongoDB 컨테이너 실행 완료'; 
       tail -f /dev/null"
 
