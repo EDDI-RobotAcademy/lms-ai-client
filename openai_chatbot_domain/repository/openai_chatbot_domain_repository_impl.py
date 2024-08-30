@@ -48,7 +48,7 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
         }
         print("Recipe generating starting...")
 
-        async with httpx.AsyncClient(timeout=10) as client:
+        async with httpx.AsyncClient(timeout=15) as client:
             try:
                 response = await client.post(self.OPENAI_CHAT_COMPLETIONS_URL, headers=self.headers, json=data)
                 response.raise_for_status()
@@ -56,30 +56,6 @@ class OpenaiChatbotDomainRepositoryImpl(OpenaiChatbotDomainRepository):
                 generatedRecipe = response.json()['choices'][0]['message']['content'].strip()
                 print(generatedRecipe)
                 return {"recipe": generatedRecipe}
-
-            except httpx.HTTPStatusError as e:
-                print(f"HTTP Error: {str(e)}")
-                print(f"Status Code: {e.response.status_code}")
-                print(f"Response Text: {e.response.text}")
-                raise HTTPException(status_code=e.response.status_code, detail=f"HTTP Error: {e}")
-
-            except (httpx.RequestError, ValueError) as e:
-                print(f"Request Error: {e}")
-                raise HTTPException(status_code=500, detail=f"Request Error: {e}")
-
-    async def getGeneratedVoice2(self, chatbotMessage, voiceActor):
-        data = {
-            'model': 'tts-1',
-            'voice': voiceActor,
-            'messages': chatbotMessage
-        }
-        async with httpx.AsyncClient(timeout=10) as client:
-            try:
-                response = await client.post(self.OPENAI_CHAT_COMPLETIONS_URL, headers=self.headers, json=data)
-                response.raise_for_status()
-
-                generatedVoice = base64.b64encode(response.content).decode('utf-8')
-                return generatedVoice
 
             except httpx.HTTPStatusError as e:
                 print(f"HTTP Error: {str(e)}")
