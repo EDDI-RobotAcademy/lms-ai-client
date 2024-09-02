@@ -27,7 +27,4 @@ class OpenaiChatbotDomainServiceImpl(OpenaiChatbotDomainService):
         return await generatedRecipe
 
     async def getGeneratedVoice(self, chatbotMessage, voiceActor):
-        return self.__openaiChatbotDomainRepository.getGeneratedVoice(chatbotMessage, voiceActor)
-
-    async def getGeneratedVoice2(self, chatbotMessage, voiceActor):
-        return self.__openaiChatbotDomainRepository.getGeneratedVoice2(chatbotMessage, voiceActor)
+        return await self.__openaiChatbotDomainRepository.getGeneratedVoice(chatbotMessage, voiceActor)
