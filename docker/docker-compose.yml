@@ -11,33 +11,34 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb_data:/data/db
-      - ./mongod.conf:/etc/mongo/mongod.conf  # IP 화이트리스트 설정 참조
-      - ./scripts:/scripts  # Python 스크립트를 위한 볼륨 매핑
+      - ./mongod.conf:/etc/mongo/mongod.conf
     restart: unless-stopped
+    env_file:
+      - ../.env
+
+  python-script:
+    image: python:3.10  # Python 3.10 이미지 사용
+    container_name: python-script-container
+    depends_on:
+      - mongodb
+    volumes:
+      - ./scripts:/scripts  # 스크립트 폴더가 매핑된 경로
     command: >
       bash -c "
-      echo 'MongoDB 컨테이너 시작 중...';
-      mongosh -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase admin --eval \"
-      var userExists = db.getSiblingDB('admin').getUser('${MONGO_USER}');
-      if (userExists) {
-          print('사용자 ${MONGO_USER} 이미 존재');
-      } else {
-          db.getSiblingDB('${MONGO_DB}').createUser({
-              user: '${MONGO_USER}',
-              pwd: '${MONGO_PASSWORD}',
-              roles: [{ role: 'readWrite', db: '${MONGO_DB}' }]
-          });
-          print('사용자 ${MONGO_USER} 생성 완료');
-      }\";
-      python3 /scripts/check_and_create_collection.py;  # 파이썬 스크립트 실행
-      echo 'MongoDB 컨테이너 실행 완료'; 
-      tail -f /dev/null"
+      pip install pymongo;
+      python3 /scripts/check_and_create_collection.py;
+      echo 'Python 스크립트 실행 완료';"
+    env_file:
+      - ../.env
 
 volumes:
   mongodb_data:
 
+
 # 사용 방법:
 # 1. .env 파일을 생성하여 필요한 환경 변수를 설정합니다.
 # 2. 'docker-compose up -d' 명령어를 실행하여 MongoDB 컨테이너를 시작합니다.
-# 3. MongoDB에 접속하려면 다음 명령어를 사용합니다:
-#    'docker exec -it mongodb-container mongosh -u <사용자명> -p <비밀번호> --authenticationDatabase <DB이름>'
+# 2-1. 2개 컨테이너가 잘 실행되었다는 걸 확인한 후, docker logs python-script-container를 터미널에서 실행합니다.
+# 3. vscode에서 mongodb익스텐션 설치
+#  mongodb://eddi:eddi%40123@localhost:27017/lms_mongodb?authSource=admin 를 입력해서 접속합니다
+# db접속과 컬렉션이 잘 생성되었는지 확인합니다

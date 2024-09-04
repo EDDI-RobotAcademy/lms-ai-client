@@ -1,18 +1,23 @@
 from pymongo import MongoClient
+import os
+from urllib.parse import quote_plus  # URL 인코딩을 위한 모듈
 
-# MongoDB 연결 설정
-url = 'mongodb://localhost:27017'
-db_name = 'your_database_name'
-collection_name = 'your_collection_name'
+# 환경 변수에서 MongoDB 인증 정보 가져오기
+username = quote_plus(os.getenv('MONGO_INITDB_ROOT_USERNAME'))
+password = quote_plus(os.getenv('MONGO_INITDB_ROOT_PASSWORD'))
+db_name = 'lms_mongodb'
+collection_name = 'mongo_recipe'
+
+# MongoDB 연결 설정 (인증 정보 포함)
+url = f'mongodb://{username}:{password}@mongodb-container:27017/{db_name}?authSource=admin'
 
 def create_database_and_collection():
     client = MongoClient(url)
-    
-    # 데이터베이스 선택 (데이터베이스가 없으면 이 시점에서 생성됨)
+
+    # 데이터베이스 선택
     db = client[db_name]
 
-    # 데이터베이스 생성(사실상 데이터베이스는 이 단계에서 MongoDB가 자동으로 생성함)
-    # 이 부분은 데이터베이스가 명시적으로 생성되도록 하는 역할을 수행합니다.
+    # 컬렉션이 없으면 생성
     if collection_name not in db.list_collection_names():
         print(f'Database "{db_name}" and Collection "{collection_name}" do not exist. Creating them now.')
         db.create_collection(collection_name)
