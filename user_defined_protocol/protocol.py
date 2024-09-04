@@ -6,6 +6,8 @@ class UserDefinedProtocolNumber(Enum):
     FIRST_USER_DEFINED_FUNCTION_FOR_TEST = 5
     MAKE_RECIPE = 43
     MAKE_AUDIO = 44
+    MAKE_RECIPE_WITH_RETRIEVER = 45
+    MAKE_DOCS_FAISS_INDEX = 46
 
     @classmethod
     def hasValue(cls, value):

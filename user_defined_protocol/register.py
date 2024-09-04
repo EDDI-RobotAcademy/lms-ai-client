@@ -4,6 +4,13 @@ import sys
 from first_user_defined_function_domain.service.fudf_service_impl import FudfServiceImpl
 from first_user_defined_function_domain.service.request.fudf_just_for_test_request import FudfJustForTestRequest
 from first_user_defined_function_domain.service.response.fudf_just_for_test_response import FudfJustForTestResponse
+from langchain_chatbot_domain.service.langchain_chatbot_domain_service_impl import LangchainChatbotDomainServiceImpl
+from langchain_chatbot_domain.service.request.langchain_chatbot_domain_get_faiss_request import \
+    LangchainChatbotDomainGetFaissRequest
+from langchain_chatbot_domain.service.request.langchain_chatbot_domain_request import LangchainChatbotDomainRequest
+from langchain_chatbot_domain.service.response.langchain_chatbot_domain_get_faiss_response import \
+    LangchainChatbotDomainGetFaissResponse
+from langchain_chatbot_domain.service.response.langchain_chatbot_domain_response import LangchainChatbotDomainResponse
 from openai_chatbot_domain.service.openai_chatbot_service_impl import OpenaiChatbotDomainServiceImpl
 from openai_chatbot_domain.service.request.openai_chatbot_domain_request import OpenaiChatbotDomainRequest
 from openai_chatbot_domain.service.request.openai_chatbot_domain_tts_request import OpenaiChatbotDomainTTSRequest
@@ -87,7 +94,53 @@ class UserDefinedProtocolRegister:
         )
 
     @staticmethod
+    def LangchainChatbotDomainProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        langchainChatbotDomainService = LangchainChatbotDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.MAKE_RECIPE_WITH_RETRIEVER,
+            LangchainChatbotDomainRequest
+        )
+
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.MAKE_RECIPE_WITH_RETRIEVER,
+            LangchainChatbotDomainResponse
+        )
+
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.MAKE_RECIPE_WITH_RETRIEVER,
+            langchainChatbotDomainService.getGeneratedRecipe
+        )
+
+    @staticmethod
+    def LangchainChatbotDomainGetFaissIndexProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        langchainChatbotDomainService = LangchainChatbotDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.MAKE_DOCS_FAISS_INDEX,
+            LangchainChatbotDomainGetFaissRequest
+        )
+
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.MAKE_DOCS_FAISS_INDEX,
+            LangchainChatbotDomainGetFaissResponse
+        )
+
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.MAKE_DOCS_FAISS_INDEX,
+            langchainChatbotDomainService.getFaissIndex
+        )
+
+    @staticmethod
     def registerUserDefinedProtocol():
         UserDefinedProtocolRegister.registerDefaultUserDefinedProtocol()
         UserDefinedProtocolRegister.OpenaiChatbotDomainProtocol()
         UserDefinedProtocolRegister.OpenaiChatbotDamainTTSProtocol()
+        UserDefinedProtocolRegister.LangchainChatbotDomainProtocol()
+        UserDefinedProtocolRegister.LangchainChatbotDomainGetFaissIndexProtocol()
