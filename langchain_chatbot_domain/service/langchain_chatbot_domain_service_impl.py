@@ -28,10 +28,11 @@ class LangchainChatbotDomainServiceImpl(LangchainChatbotDomainService):
 
     async def getGeneratedRecipe(self, userSendMessage):
         embedding = self.__langchainRepository.loadEmbeddingModel()
-        faissIndex = self.__langchainRepository.loadFaissIndex(faissIndexPath='assets/faiss_index_file', embeddings=embedding)
+        faissIndex = self.__langchainRepository.loadFaissIndex(faissIndexPath='assets/faiss_index_file',
+                                                               embeddings=embedding)
         llm = self.__langchainRepository.loadLLMChain()
         prompt = self.__langchainRepository.generatePrompt()
         chain = self.__langchainRepository.createChain(llm, prompt, faissIndex)
         response = await self.__langchainRepository.invokeChain(chain, userSendMessage)
 
-        return response
+        return {'response': response}
