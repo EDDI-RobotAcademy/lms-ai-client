@@ -35,4 +35,4 @@ class LangchainChatbotDomainServiceImpl(LangchainChatbotDomainService):
         chain = self.__langchainRepository.createChain(llm, prompt, faissIndex)
         response = await self.__langchainRepository.invokeChain(chain, userSendMessage)
 
-        return {'response': response}
+        return {'recipe': response}
