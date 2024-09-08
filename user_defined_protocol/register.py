@@ -1,6 +1,15 @@
 import os
 import sys
 
+from chat_log_domain.service.chat_log_domain_service_impl import ChatLogDomainServiceImpl
+from chat_log_domain.service.request.chat_log_domain_delete_request import ChatLogDomainDeleteRequest
+from chat_log_domain.service.request.chat_log_domain_get_all_request import ChatLogDomainGetAllRequest
+from chat_log_domain.service.request.chat_log_domain_get_request import ChatLogDomainGetRequest
+from chat_log_domain.service.request.chat_log_domain_save_request import ChatLogDomainSaveRequest
+from chat_log_domain.service.response.chat_log_domain_delete_response import ChatLogDomainDeleteResponse
+from chat_log_domain.service.response.chat_log_domain_get_all_response import ChatLogDomainGetAllResponse
+from chat_log_domain.service.response.chat_log_domain_get_response import ChatLogDomainGetResponse
+from chat_log_domain.service.response.chat_log_domain_save_response import ChatLogDomainSaveResponse
 from first_user_defined_function_domain.service.fudf_service_impl import FudfServiceImpl
 from first_user_defined_function_domain.service.request.fudf_just_for_test_request import FudfJustForTestRequest
 from first_user_defined_function_domain.service.response.fudf_just_for_test_response import FudfJustForTestResponse
@@ -138,9 +147,93 @@ class UserDefinedProtocolRegister:
         )
 
     @staticmethod
+    def ChatLogDomainGetLogProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        chatLogDomainService = ChatLogDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.GET_LOG,
+            ChatLogDomainGetRequest
+        )
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.GET_LOG,
+            ChatLogDomainGetResponse
+        )
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.GET_LOG,
+            chatLogDomainService.getLog
+        )
+
+    @staticmethod
+    def ChatLogDomainGetAllLogProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        chatLogDomainService = ChatLogDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.GET_ALL_LOGS,
+            ChatLogDomainGetAllRequest
+        )
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.GET_ALL_LOGS,
+            ChatLogDomainGetAllResponse
+        )
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.GET_ALL_LOGS,
+            chatLogDomainService.getAllLogs
+        )
+
+    @staticmethod
+    def ChatLogDomainDeleteLogProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        chatLogDomainService = ChatLogDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.DELETE_LOG,
+            ChatLogDomainDeleteRequest
+        )
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.DELETE_LOG,
+            ChatLogDomainDeleteResponse
+        )
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.DELETE_LOG,
+            chatLogDomainService.deleteLog
+        )
+
+    @staticmethod
+    def ChatLogDomainSaveLogProtocol():
+        customProtocolService = CustomProtocolServiceImpl.getInstance()
+        chatLogDomainService = ChatLogDomainServiceImpl.getInstance()
+
+        requestClassMapInstance = RequestClassMap.getInstance()
+        requestClassMapInstance.addRequestClass(
+            UserDefinedProtocolNumber.SAVE_LOG,
+            ChatLogDomainSaveRequest
+        )
+        responseClassMapInstance = ResponseClassMap.getInstance()
+        responseClassMapInstance.addResponseClass(
+            UserDefinedProtocolNumber.SAVE_LOG,
+            ChatLogDomainSaveResponse
+        )
+        customProtocolService.registerCustomProtocol(
+            UserDefinedProtocolNumber.SAVE_LOG,
+            chatLogDomainService.saveLog
+        )
+
+    @staticmethod
     def registerUserDefinedProtocol():
         UserDefinedProtocolRegister.registerDefaultUserDefinedProtocol()
         UserDefinedProtocolRegister.OpenaiChatbotDomainProtocol()
         UserDefinedProtocolRegister.OpenaiChatbotDamainTTSProtocol()
         UserDefinedProtocolRegister.LangchainChatbotDomainProtocol()
         UserDefinedProtocolRegister.LangchainChatbotDomainGetFaissIndexProtocol()
+        UserDefinedProtocolRegister.ChatLogDomainGetLogProtocol()
+        UserDefinedProtocolRegister.ChatLogDomainGetAllLogProtocol()
+        UserDefinedProtocolRegister.ChatLogDomainDeleteLogProtocol()
+        UserDefinedProtocolRegister.ChatLogDomainSaveLogProtocol()

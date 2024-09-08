@@ -9,6 +9,11 @@ class UserDefinedProtocolNumber(Enum):
     MAKE_RECIPE_WITH_RETRIEVER = 45
     MAKE_DOCS_FAISS_INDEX = 46
 
+    GET_LOG = 55
+    GET_ALL_LOGS = 100
+    DELETE_LOG = 54
+    SAVE_LOG = 56
+
     @classmethod
     def hasValue(cls, value):
         return any(value == item.value for item in cls)
