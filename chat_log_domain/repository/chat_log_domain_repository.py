@@ -9,3 +9,11 @@ class ChatLogDomainRepository(ABC):
     @abstractmethod
     def getAllLogs(self):
         pass
+
+    @abstractmethod
+    def deleteLogByAccountAndHash(self, account_id, recipe_hash):
+        pass
+
+    @abstractmethod
+    def getLogByAccountAndHash(self, account_id, recipe_hash):
+        pass

@@ -25,3 +25,10 @@ class ChatLogDomainServiceImpl(ChatLogDomainService):
 
     async def getAllLogs(self):
         return await self.__chatLogDomainRepository.getAllLogs()
+
+    async def deleteLog(self, account_id, recipe_hash):
+        deleted_count = self.__chatLogDomainRepository.deleteLogByAccountAndHash(account_id, recipe_hash)
+        return deleted_count
+
+    async def getLog(self, account_id, recipe_hash):
+        log_data = self.__chatLogDomainRepository.getLogByAccountAndHash(account_id, recipe_hash)

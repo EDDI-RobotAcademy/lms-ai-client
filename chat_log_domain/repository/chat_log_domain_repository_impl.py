@@ -3,6 +3,7 @@ from chat_log_domain.repository.chat_log_domain_repository import ChatLogDomainR
 import os
 from pymongo import MongoClient
 
+
 class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
     __instance = None
 
@@ -27,7 +28,8 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
 
     async def saveLog(self, account_id, recipe_hash, recipe):
         try:
-            return await self.__collection.insert_one({'account_id':account_id, 'recipe_hash':recipe_hash, 'recipe': recipe})
+            return await self.__collection.insert_one(
+                {'account_id': account_id, 'recipe_hash': recipe_hash, 'recipe': recipe})
 
         except Exception as e:
             print(f"error while saving: {e}")
@@ -35,3 +37,10 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
     async def getAllLogs(self):
         return list(self.__collection.find())
 
+    async def deleteLogByAccountAndHash(self, account_id, recipe_hash):
+        result = self.__collection.delete_one({'account_id': account_id, 'recipe_hash': recipe_hash})
+        return result.delete_count
+
+    async def getLogByAccountAndHash(self, account_id, recipe_hash):
+        result = self.__collection.find_one({'account_id': account_id, 'recipe_hash': recipe_hash})
+        return result
