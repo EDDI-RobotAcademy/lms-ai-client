@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from chat_log_domain.repository.chat_log_domain_repository import ChatLogDomainRepository
 
 import os
@@ -15,11 +17,12 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
             return cls.__instance
 
     def __init__(self):
+        self.__expireAt = datetime.utcnow() + timedelta(days = 28)
         connectionString = f"mongodb://{os.getenv('MONGO_INITDB_ROOT_USERNAME')}:{urllib.parse.quote(os.getenv('MONGO_INITDB_ROOT_PASSWORD'))}@localhost:27017"
         dbName = os.getenv('MONGO_DB')
         self.__client = AsyncIOMotorClient(connectionString)
         self.__db = self.__client[dbName]
-        self.__collection = self.__db['chatlog']
+        self.__collection = self.__db['mongo_recipe']
 
     @classmethod
     def getInstance(cls):
@@ -29,8 +32,9 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
 
     async def saveLog(self, account_id, recipe_hash, recipe):
         try:
+            # 2419200 < 28일
             return await self.__collection.insert_one(
-                {'account_id': account_id, 'recipe_hash': recipe_hash, 'recipe': recipe})
+                {'account_id': account_id, 'recipe_hash': recipe_hash, 'recipe': recipe, 'expireAt': self.__expireAt})
 
         except Exception as e:
             print(f"error while saving: {e}")
