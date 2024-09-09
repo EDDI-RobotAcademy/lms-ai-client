@@ -1,7 +1,8 @@
 from chat_log_domain.repository.chat_log_domain_repository import ChatLogDomainRepository
 
 import os
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
+import urllib.parse
 
 
 class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
@@ -14,9 +15,9 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
             return cls.__instance
 
     def __init__(self):
-        connectionString = f"mongodb://{os.getenv('MONGO_INITDB_ROOT_USERNAME')}:{os.getenv('MONGO_INITDB_ROOT_PASSWORD')}@localhost:27017/"
+        connectionString = f"mongodb://{os.getenv('MONGO_INITDB_ROOT_USERNAME')}:{urllib.parse.quote(os.getenv('MONGO_INITDB_ROOT_PASSWORD'))}@localhost:27017"
         dbName = os.getenv('MONGO_DB')
-        self.__client = MongoClient(connectionString)
+        self.__client = AsyncIOMotorClient(connectionString)
         self.__db = self.__client[dbName]
         self.__collection = self.__db['chatlog']
 
@@ -35,12 +36,12 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
             print(f"error while saving: {e}")
 
     async def getAllLogs(self):
-        return list(self.__collection.find())
+        return list(await self.__collection.find())
 
     async def deleteLogByAccountAndHash(self, account_id, recipe_hash):
-        result = self.__collection.delete_one({'account_id': account_id, 'recipe_hash': recipe_hash})
-        return result.delete_count
+        result = await self.__collection.delete_one({'account_id': account_id, 'recipe_hash': recipe_hash})
+        return result.deleted_count
 
     async def getLogByAccountAndHash(self, account_id, recipe_hash):
-        result = self.__collection.find_one({'account_id': account_id, 'recipe_hash': recipe_hash})
+        result = await self.__collection.find_one({'account_id': account_id, 'recipe_hash': recipe_hash})
         return result
