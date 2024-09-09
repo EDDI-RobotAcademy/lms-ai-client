@@ -17,7 +17,7 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
             return cls.__instance
 
     def __init__(self):
-        self.__expireAt = datetime.utcnow() + timedelta(days = 28)
+        self.__expireAt = datetime.utcnow() + timedelta(days = 7)
         connectionString = f"mongodb://{os.getenv('MONGO_INITDB_ROOT_USERNAME')}:{urllib.parse.quote(os.getenv('MONGO_INITDB_ROOT_PASSWORD'))}@localhost:27017"
         dbName = os.getenv('MONGO_DB')
         self.__client = AsyncIOMotorClient(connectionString)
