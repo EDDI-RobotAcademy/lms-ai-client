@@ -3,7 +3,7 @@ from chat_log_domain.repository.chat_log_domain_repository import ChatLogDomainR
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 import urllib.parse
-
+from datetime import datetime
 
 class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
     __instance = None
@@ -19,7 +19,8 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
         dbName = os.getenv('MONGO_DB')
         self.__client = AsyncIOMotorClient(connectionString)
         self.__db = self.__client[dbName]
-        self.__collection = self.__db['chatlog']
+        self.__collection = self.__db['mongo_recipe']                  # 메인 컬렉션
+        self.__archive_collection = self.__db['mongo_recipe_archive']  # 아카이브 컬렉션
 
     @classmethod
     def getInstance(cls):
@@ -27,13 +28,17 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
             cls.__instance = cls()
         return cls.__instance
 
-    async def saveLog(self, account_id, recipe_hash, recipe):
-        try:
-            return await self.__collection.insert_one(
-                {'account_id': account_id, 'recipe_hash': recipe_hash, 'recipe': recipe})
+    async def saveLog(self, accountId: str, recipeHash: str, recipe: str):
+        # 현재 시간을 lastAccessedAt에 추가
+        log_data = {
+            "account_id": accountId,
+            "recipe_hash": recipeHash,
+            "recipe": recipe,
+            "lastAccessedAt": datetime.utcnow()  # 현재 UTC 시간 저장
+        }
 
-        except Exception as e:
-            print(f"error while saving: {e}")
+        # DB에 저장
+        await self.__db_collection.insert_one(log_data)
 
     async def getAllLogs(self):
         return list(await self.__collection.find())
@@ -42,6 +47,38 @@ class ChatLogDomainRepositoryImpl(ChatLogDomainRepository):
         result = await self.__collection.delete_one({'account_id': account_id, 'recipe_hash': recipe_hash})
         return result.deleted_count
 
-    async def getLogByAccountAndHash(self, account_id, recipe_hash):
-        result = await self.__collection.find_one({'account_id': account_id, 'recipe_hash': recipe_hash})
-        return result
+    async def getLogByAccountAndHash(self, accountId: str, recipeHash: str):
+        # 1. Main DB에서 데이터 조회
+        logData = await self.__db_collection.find_one({"account_id": accountId, "recipe_hash": recipeHash})
+        
+        if logData is not None:
+            # 2. 조회 시 lastAccessedAt을 현재 시간으로 업데이트
+            await self.__db_collection.update_one(
+                {"account_id": accountId, "recipe_hash": recipeHash},
+                {"$set": {"lastAccessedAt": datetime.utcnow()}}
+            )
+            return logData
+
+        # 3. DB에 데이터가 없는 경우 -> 아카이브에서 조회
+        logData = await self.getLogFromArchive(accountId, recipeHash)
+        return logData
+    
+    async def getLogFromArchive(self, accountId, recipeHash):
+        # 아카이브에서 해당 청크 조회 및 압축 해제
+        archiveData = await self.__archive_collection.find_one({'chunk_id': 'some_chunk_id'})
+        decompressedChunk = self.decompressDocument(archiveData['chunk'])
+
+        # 해당 문서 찾기 및 나머지 문서 분리
+        requestedLog = next((log for log in decompressedChunk if log['recipe_hash'] == recipeHash), None)
+        remainingLogs = [log for log in decompressedChunk if log['recipe_hash'] != recipeHash]
+
+        # 4. 해당 문서를 DB에 저장 및 lastAccessedAt 업데이트
+        requestedLog['lastAccessedAt'] = datetime.utcnow()
+        await self.__db_collection.insert_one(requestedLog)
+        await self.__archive_collection.delete_one({'recipe_hash': recipeHash})
+
+        # 5. 나머지 문서들을 재압축하여 아카이브에 저장 (비동기 처리)
+        compressedRemaining = self.compressDocument(remainingLogs)
+        await self.__archive_collection.insert_one({'chunk': compressedRemaining})
+
+        return requestedLog
