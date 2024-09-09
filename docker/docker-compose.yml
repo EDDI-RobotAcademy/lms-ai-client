@@ -38,6 +38,7 @@ volumes:
 # 사용 방법:
 # 1. .env 파일을 생성하여 필요한 환경 변수를 설정합니다.
 # 2. 'docker-compose up -d' 명령어를 실행하여 MongoDB 컨테이너를 시작합니다.
+#     환경변수를 찾지 못한다는 구문이 출력 될 경우 'docker-compose --env-file ../.env up -d'명령어로 env파일을 명시해줍니다.
 # 2-1. 2개 컨테이너가 잘 실행되었다는 걸 확인한 후, docker logs python-script-container를 터미널에서 실행합니다.
 # 3. vscode에서 mongodb익스텐션 설치
 #  mongodb://eddi:eddi%40123@localhost:27017/lms_mongodb?authSource=admin 를 입력해서 접속합니다
