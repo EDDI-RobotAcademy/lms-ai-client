@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 import os
 from urllib.parse import quote_plus  # URL 인코딩을 위한 모듈
 
@@ -22,6 +22,7 @@ def create_database_and_collection():
         print(f'Database "{db_name}" and Collection "{collection_name}" do not exist. Creating them now.')
         db.create_collection(collection_name)
         print(f'Database "{db_name}" and Collection "{collection_name}" created successfully.')
+        db[collection_name].create_index([("expireAt", ASCENDING)], expireAfterSeconds=0)
     else:
         print(f'Collection "{collection_name}" already exists in Database "{db_name}". Skipping creation.')
 
